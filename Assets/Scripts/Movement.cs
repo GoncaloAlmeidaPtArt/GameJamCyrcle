@@ -5,19 +5,20 @@ using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveForce = 10f;
-    public float maxSpeed = 15f;
-    public float jumpForce = 5f;
+    [SerializeField] private float moveForce = 10f;
+    [SerializeField] private float maxSpeed = 15f;
+    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private Camera cam;
 
     [Header("Visual Roll")]
-    public Transform ballMesh;   // drag the child sphere here
-    public float rollMultiplier = 1f;
+    [SerializeField] private Transform ballMesh;   // drag the child sphere here
+    [SerializeField] private float rollMultiplier = 1f;
 
 
     [Header("Ground Check")]
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.3f;
-    public LayerMask groundLayer;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.3f;
+    [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody rb;
     private bool isGrounded;
@@ -50,7 +51,12 @@ public class Movement : MonoBehaviour
         float h = input.x; // A/D
         float v = input.y;   // W/S
 
-        Vector3 movement = new Vector3(h, 0f, v);
+        Vector3 camForward = cam.transform.forward;
+        Vector3 camRight   = cam.transform.right;
+        camForward.y = 0f; camRight.y = 0f;
+        camForward.Normalize(); camRight.Normalize();
+
+        Vector3 movement = camForward * v + camRight * h;
 
         // Optional: cap horizontal speed
         Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
